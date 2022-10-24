@@ -33,21 +33,31 @@ public class CRUD {
 	
 	@Test
 	public void deveFazerLogin() {
-		User user = new User("read@teste.com", "read");
+
 		
-		given()
+		String token =
+				given()
 			.log().all()
-			.body(user)
-			.contentType(ContentType.URLENC.withCharset("UTF-8"))
+			.auth().preemptive().basic("teste@read6.com", "senha")
+			.contentType(ContentType.JSON.withCharset("UTF-8"))
 		.when()
 			.post("http://localhost:5000/api/login")
 		.then()
 			.log().all()
-			.statusCode(200)
-//			.body("user.userEmail", is("read@teste.com"))
-//			.body("user.userPwd", is("read"))
-//			.body("user.role", is("read"))
+			.statusCode(201)
+			.extract().path("token")
 		;
+		
+		given()
+			.log().all()
+		.header("Authorization",token)
+			.contentType(ContentType.JSON.withCharset("UTF-8"))
+		.when()
+			.get("http://localhost:5000/api/employees/all")
+		.then()
+			.log().all()
+			.statusCode(200)
+	;
 		
 	}
 
